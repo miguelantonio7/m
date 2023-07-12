@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cajero Automático</title>
+    <style>
+        input[type="number"] {
+            width: 150px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cajero Automático</h1>
+
+    <select id="cuentas" onchange="seleccionarCuenta()">
+        <option value="0">Persona 1</option>
+        <option value="1">Persona 2</option>
+        <option value="2">Persona 3</option>
+    </select>
+
+    <div id="passwordDiv" style="display: none;">
+        <label for="password">Ingrese el password:</label>
+        <input type="password" id="password">
+        <button onclick="verificarPassword()">Ingresar</button>
+        <p id="errorPassword" style="color: red; display: none;">Password incorrecto. Inténtelo nuevamente.</p>
+    </div>
+
+    <div id="opcionesDiv" style="display: none;">
+        <button onclick="consultarSaldo()">Consultar saldo</button>
+        <button onclick="mostrarIngresarMonto()">Ingresar monto</button>
+        <button onclick="mostrarRetirarMonto()">Retirar monto</button>
+
+        <div id="ingresarMontoDiv" style="display: none;">
+            <label for="montoIngresar">Ingrese el monto a ingresar:</label>
+            <input type="number" id="montoIngresar">
+            <button onclick="ingresarMonto()">Ingresar</button>
+        </div>
+
+        <div id="retirarMontoDiv" style="display: none;">
+            <label for="montoRetirar">Ingrese el monto a retirar:</label>
+            <input type="number" id="montoRetirar">
+            <button onclick="retirarMonto()">Retirar</button>
+        </div>
+
+        <p id="saldoActual" style="display: none;"></p>
+        <p id="mensajeOperacion" style="display: none;"></p>
+    </div>
+
+    <script>
+        var cuentas = [
+            { nombre: "Mali", saldo: 200 },
+            { nombre: "Gera", saldo: 290 },
+            { nombre: "Maui", saldo: 67 }
+        ];
+
+        var cuentaSeleccionada;
+        var passwordInput = document.getElementById("password");
+        var errorPasswordMsg = document.getElementById("errorPassword");
+        var opcionesDiv = document.getElementById("opcionesDiv");
+        var ingresarMontoDiv = document.getElementById("ingresarMontoDiv");
+        var montoIngresarInput = document.getElementById("montoIngresar");
+        var retirarMontoDiv = document.getElementById("retirarMontoDiv");
+        var montoRetirarInput = document.getElementById("montoRetirar");
+        var saldoActualMsg = document.getElementById("saldoActual");
+        var mensajeOperacionMsg = document.getElementById("mensajeOperacion");
+
+        function seleccionarCuenta() {
+            var seleccion = document.getElementById("cuentas").value;
+            cuentaSeleccionada = cuentas[seleccion];
+            passwordInput.value = "";
+            errorPasswordMsg.style.display = "none";
+            opcionesDiv.style.display = "none";
+            ingresarMontoDiv.style.display = "none";
+            montoIngresarInput.value = "";
+            retirarMontoDiv.style.display = "none";
+            montoRetirarInput.value = "";
+            saldoActualMsg.style.display = "none";
+            mensajeOperacionMsg.style.display = "none";
+            document.getElementById("passwordDiv").style.display = "block";
+        }
+
+        function verificarPassword() {
+            var password = passwordInput.value;
+            if (password === "1234") {
+                document.getElementById("passwordDiv").style.display = "none";
+                opcionesDiv.style.display = "block";
+            } else {
+                errorPasswordMsg.style.display = "block";
+            }
+        }
+
+        function mostrarIngresarMonto() {
+            ingresarMontoDiv.style.display = "block";
+        }
+
+        function mostrarRetirarMonto() {
+            retirarMontoDiv.style.display = "block";
+        }
+
+        function consultarSaldo() {
+            saldoActualMsg.innerText = "Saldo actual: $" + cuentaSeleccionada.saldo;
+            saldoActualMsg.style.display = "block";
+        }
+
+        function ingresarMonto() {
+            var monto = parseFloat(montoIngresarInput.value);
+            if (!isNaN(monto) && monto > 0) {
+                var saldoAnterior = cuentaSeleccionada.saldo;
+                cuentaSeleccionada.saldo += monto;
+                mensajeOperacionMsg.innerText = "Se ha ingresado $" + monto + ". Nuevo saldo: $" + cuentaSeleccionada.saldo;
+                mensajeOperacionMsg.style.display = "block";
+                montoIngresarInput.value = "";
+                saldoActualMsg.innerText = "Saldo anterior: $" + saldoAnterior + ", Saldo actual: $" + cuentaSeleccionada.saldo;
+                saldoActualMsg.style.display = "block";
+            }
+        }
+
+        function retirarMonto() {
+            var monto = parseFloat(montoRetirarInput.value);
+            if (!isNaN(monto) && monto > 0) {
+                var saldoAnterior = cuentaSeleccionada.saldo;
+                if (monto <= cuentaSeleccionada.saldo && cuentaSeleccionada.saldo - monto >= 10 && cuentaSeleccionada.saldo - monto <= 990) {
+                    cuentaSeleccionada.saldo -= monto;
+                    mensajeOperacionMsg.innerText = "Se ha retirado $" + monto + ". Nuevo saldo: $" + cuentaSeleccionada.saldo;
+                    mensajeOperacionMsg.style.display = "block";
+                    montoRetirarInput.value = "";
+                    saldoActualMsg.innerText = "Saldo anterior: $" + saldoAnterior + ", Saldo actual: $" + cuentaSeleccionada.saldo;
+                    saldoActualMsg.style.display = "block";
+                } else {
+                    mensajeOperacionMsg.innerText = "Monto a retirar inválido. Verifique su saldo y el monto a retirar.";
+                    mensajeOperacionMsg.style.display = "block";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
